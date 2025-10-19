@@ -5,7 +5,9 @@ resource "aws_instance" "terraform-ec2" {
     ami = "ami-0645cf88151eb2007"
     key_name = "Inst1"
     instance_type = "t2.micro"
-    tags = {
+      security_groups = [aws_security_group.default.id]
+
+tags = {
         Name = "Ec2-terraform"
     }
 }
