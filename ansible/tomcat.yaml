@@ -6,7 +6,7 @@
   tasks:
     - name: Install Java and wget
       yum:
-        name: ['wget','java-21-openjdk']
+        name: ['wget', 'java-21-openjdk']
         state: present
 
     - name: Download Tomcat archive
@@ -25,13 +25,42 @@
       args:
         creates: /opt/tomcat
 
-    - name: Deploy application JAR to Tomcat
+    - name: Add admin user to tomcat-users.xml
+      blockinfile:
+        path: /opt/tomcat/conf/tomcat-users.xml
+        marker: ""
+        insertafter: "<tomcat-users>"
+        block: |
+          <role rolename="manager-gui"/>
+          <role rolename="admin-gui"/>
+          <user username="admin" password="admin123" roles="manager-gui,admin-gui"/>
+
+    - name: Allow remote access to manager app
+      replace:
+        path: /opt/tomcat/webapps/manager/META-INF/context.xml
+        regexp: '(<Context[^>]*>)'
+        replace: '\1<!-- removed IP restrictions -->'
+      notify: Restart Tomcat
+
+    - name: Allow remote access to host-manager app
+      replace:
+        path: /opt/tomcat/webapps/host-manager/META-INF/context.xml
+        regexp: '(<Context[^>]*>)'
+        replace: '\1<!-- removed IP restrictions -->'
+      notify: Restart Tomcat
+
+    - name: Deploy application JAR to Tomcat (optional)
       copy:
         src: /tmp/app.jar
         dest: /opt/tomcat/webapps/app.jar
         remote_src: yes
+      notify: Restart Tomcat
 
-    - name: Start Tomcat
-      shell: nohup /opt/tomcat/bin/startup.sh &
+  handlers:
+    - name: Restart Tomcat
+      shell: |
+        /opt/tomcat/bin/shutdown.sh || true
+        sleep 5
+        nohup /opt/tomcat/bin/startup.sh &
       args:
         executable: /bin/bash
