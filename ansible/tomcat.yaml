@@ -35,18 +35,18 @@
           <role rolename="admin-gui"/>
           <user username="admin" password="admin123" roles="manager-gui,admin-gui"/>
 
-    - name: Remove IP restrictions from manager app
-      replace:
-        path: /opt/tomcat/webapps/manager/META-INF/context.xml
-        regexp: '.*RemoteAddrValve.*'
-        replace: ''
+    - name: Allow remote access - overwrite manager context.xml
+      copy:
+        content: |
+          <Context antiResourceLocking="false" privileged="true" />
+        dest: /opt/tomcat/webapps/manager/META-INF/context.xml
       notify: Restart Tomcat
 
-    - name: Remove IP restrictions from host-manager app
-      replace:
-        path: /opt/tomcat/webapps/host-manager/META-INF/context.xml
-        regexp: '.*RemoteAddrValve.*'
-        replace: ''
+    - name: Allow remote access - overwrite host-manager context.xml
+      copy:
+        content: |
+          <Context antiResourceLocking="false" privileged="true" />
+        dest: /opt/tomcat/webapps/host-manager/META-INF/context.xml
       notify: Restart Tomcat
 
     - name: Deploy application JAR to Tomcat (optional)
