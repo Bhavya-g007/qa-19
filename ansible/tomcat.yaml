@@ -26,26 +26,31 @@
         creates: /opt/tomcat
 
     - name: Add admin user to tomcat-users.xml
-      blockinfile:
-        path: /opt/tomcat/conf/tomcat-users.xml
-        marker: ""
-        insertafter: "<tomcat-users>"
-        block: |
-          <role rolename="manager-gui"/>
-          <role rolename="admin-gui"/>
-          <user username="admin" password="admin123" roles="manager-gui,admin-gui"/>
+      copy:
+        dest: /opt/tomcat/conf/tomcat-users.xml
+        content: |
+          <tomcat-users>
+            <role rolename="manager-gui"/>
+            <role rolename="admin-gui"/>
+            <user username="admin" password="admin123" roles="manager-gui,admin-gui"/>
+          </tomcat-users>
+      notify: Restart Tomcat
 
     - name: Allow remote access - overwrite manager context.xml
       copy:
         content: |
-          <Context antiResourceLocking="false" privileged="true" />
+          <Context antiResourceLocking="false" privileged="true">
+            <!-- Removed RemoteAddrValve to allow access from any IP -->
+          </Context>
         dest: /opt/tomcat/webapps/manager/META-INF/context.xml
       notify: Restart Tomcat
 
     - name: Allow remote access - overwrite host-manager context.xml
       copy:
         content: |
-          <Context antiResourceLocking="false" privileged="true" />
+          <Context antiResourceLocking="false" privileged="true">
+            <!-- Removed RemoteAddrValve to allow access from any IP -->
+          </Context>
         dest: /opt/tomcat/webapps/host-manager/META-INF/context.xml
       notify: Restart Tomcat
 
@@ -54,6 +59,7 @@
         src: /tmp/app.jar
         dest: /opt/tomcat/webapps/app.jar
         remote_src: yes
+      ignore_errors: yes
       notify: Restart Tomcat
 
   handlers:
