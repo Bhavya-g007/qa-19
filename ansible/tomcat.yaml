@@ -21,7 +21,7 @@
         remote_src: yes
 
     - name: Rename Tomcat directory
-      command: mv /opt/apache-tomcat-9.0.85 /opt/tomcat
+      command: mv /opt/apache-tomcat-11.0.13 /opt/tomcat
       args:
         creates: /opt/tomcat
 
