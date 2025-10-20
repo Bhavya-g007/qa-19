@@ -4,9 +4,9 @@
   become: true
 
   tasks:
-    - name: Install Java wget
+    - name: Install Java and wget
       yum:
-        name: ['wget',' java-21-openjdk']
+        name: ['wget','java-21-openjdk']
         state: present
 
     - name: Download Tomcat archive
@@ -25,5 +25,13 @@
       args:
         creates: /opt/tomcat
 
+    - name: Deploy application JAR to Tomcat
+      copy:
+        src: /tmp/app.jar
+        dest: /opt/tomcat/webapps/app.jar
+        remote_src: yes
+
     - name: Start Tomcat
-      command: nohup /opt/tomcat/bin/startup.sh &
+      shell: nohup /opt/tomcat/bin/startup.sh &
+      args:
+        executable: /bin/bash
