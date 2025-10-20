@@ -56,8 +56,8 @@
 
     - name: Deploy application JAR to Tomcat (optional)
       copy:
-        src: /tmp/app.jar
-        dest: /opt/tomcat/webapps/app.jar
+        src: /tmp/java-app.jar
+        dest: /opt/tomcat/webapps/java-app.jar
         remote_src: yes
       ignore_errors: yes
       notify: Restart Tomcat
