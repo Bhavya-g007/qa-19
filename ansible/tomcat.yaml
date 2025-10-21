@@ -54,7 +54,7 @@
         dest: /opt/tomcat/webapps/host-manager/META-INF/context.xml
       notify: Restart Tomcat
 
-    - name: Deploy application JAR to Tomcat (optional)
+    - name: Deploy application JAR to Tomcat
       copy:
         src: /tmp/java-app.jar
         dest: /opt/tomcat/webapps/java-app.jar
